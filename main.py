@@ -36,7 +36,7 @@ async def on_message(message):
                 session = aiohttp.ClientSession()
                 async with session.get(link) as resp:
                     data = io.BytesIO(await resp.read())
-                    pics.append(discord.File(data, 'meme.webp'))
+                    pics.append(discord.File(data, f'meme{mid}.webp'))
                 await session.close()
             await message.channel.send(files=pics)
     elif message.content.startswith('!'):
