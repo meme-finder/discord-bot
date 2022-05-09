@@ -25,7 +25,6 @@ async def on_message(message):
     else:
         session = aiohttp.ClientSession()
         text = message.content
-        print(urllib.parse.quote(text))
         response = await session.get(f"{api_base}/images?limit=10&q={urllib.parse.quote(text)}")
         memes = await response.json()
         await session.close()
@@ -35,7 +34,7 @@ async def on_message(message):
             pics = []
             for meme in memes:
                 mid = meme['id']
-                link = f"{api_pics}/normal/{mid[:2]}/{mid[2:4]}/{mid[4:]}.webp"
+                link = f"{api_pics}/normal/{mid[:2]}/{mid[2:4]}/{mid}.webp"
                 session = aiohttp.ClientSession()
                 async with session.get(link) as resp:
                     data = io.BytesIO(await resp.read())
