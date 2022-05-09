@@ -20,11 +20,9 @@ async def check(ctx):
 async def on_message(message):
     if message.author.id == bot.user.id:
         return
-    if message.content.startswith('!'):
-        await bot.process_commands(message)
-    else:
+    if message.content.startswith('!meme'):
         session = aiohttp.ClientSession()
-        text = message.content
+        text = message.content[5:]
         response = await session.get(f"{api_base}/images?limit=10&q={urllib.parse.quote(text)}")
         memes = await response.json()
         await session.close()
@@ -41,6 +39,8 @@ async def on_message(message):
                     pics.append(discord.File(data, 'meme.webp'))
                 await session.close()
             await message.channel.send(files=pics)
+    elif message.content.startswith('!'):
+        await bot.process_commands(message)
 
 
 bot.run(token)
