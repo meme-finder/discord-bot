@@ -38,9 +38,5 @@ async def find_meme(ctx, *, meme_request):
         await ctx.reply(files=pics)
 
 
-@bot.event
-async def on_mention(message):
-    print(message.content)
-
 
 bot.run(token)
