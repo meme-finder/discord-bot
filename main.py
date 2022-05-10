@@ -16,31 +16,26 @@ async def check(ctx):
     await ctx.send('Checked')
 
 
-@bot.event
-async def on_message(message):
-    if message.author.id == bot.user.id:
-        return
-    if message.content.startswith('!meme'):
-        session = aiohttp.ClientSession()
-        text = message.content[5:]
-        response = await session.get(f"{api_base}/images?limit=10&q={urllib.parse.quote(text)}")
-        memes = await response.json()
-        await session.close()
-        if len(memes) == 0:
-            await message.channel.send('''Error 404 memes not found''')
-        else:
-            pics = []
-            for meme in memes:
-                mid = meme['id']
-                link = f"{api_pics}/normal/{mid[:2]}/{mid[2:4]}/{mid}.webp"
-                session = aiohttp.ClientSession()
-                async with session.get(link) as resp:
-                    data = io.BytesIO(await resp.read())
-                    pics.append(discord.File(data, f'{mid}.webp'))
-                await session.close()
-            await message.channel.send(files=pics)
-    elif message.content.startswith('!'):
-        await bot.process_commands(message)
+@bot.command(name='meme', pass_context=True)
+async def find_meme(ctx, *, meme_request):
+    session = aiohttp.ClientSession()
+    text = meme_request
+    response = await session.get(f"{api_base}/images?limit=10&q={urllib.parse.quote(text)}")
+    memes = await response.json()
+    await session.close()
+    if len(memes) == 0:
+        await ctx.send('''Error 404 memes not found''')
+    else:
+        pics = []
+        for meme in memes:
+            mid = meme['id']
+            link = f"{api_pics}/normal/{mid[:2]}/{mid[2:4]}/{mid}.webp"
+            session = aiohttp.ClientSession()
+            async with session.get(link) as resp:
+                data = io.BytesIO(await resp.read())
+                pics.append(discord.File(data, f'{mid}.webp'))
+            await session.close()
+        await ctx.send(files=pics)
 
 
 bot.run(token)
