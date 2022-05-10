@@ -13,7 +13,7 @@ api_pics = os.environ['API_PICS']
 
 @bot.command(name='check')
 async def check(ctx):
-    await ctx.send('Checked')
+    await ctx.reply('Checked')
 
 
 @bot.command(name='meme', pass_context=True)
@@ -24,7 +24,7 @@ async def find_meme(ctx, *, meme_request):
     memes = await response.json()
     await session.close()
     if len(memes) == 0:
-        await ctx.send('''Error 404 memes not found''')
+        await ctx.reply('''Error 404 memes not found''')
     else:
         pics = []
         for meme in memes:
@@ -35,7 +35,12 @@ async def find_meme(ctx, *, meme_request):
                 data = io.BytesIO(await resp.read())
                 pics.append(discord.File(data, f'{mid}.webp'))
             await session.close()
-        await ctx.send(files=pics)
+        await ctx.reply(files=pics)
+
+
+@bot.event
+async def on_mention(message):
+    print(message.content)
 
 
 bot.run(token)
